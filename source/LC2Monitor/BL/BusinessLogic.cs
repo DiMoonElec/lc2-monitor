@@ -229,6 +229,8 @@ namespace LC2Monitor.BL
           plcConnector.Open(portName, 115200);
           //plcConnector.Connect("192.168.88.233", 8888);
           plcRequests.Ping();
+          var info = plcRequests.GetInformation();
+          printInformation(info);
           isConnected = true;
 
           plcStatus = plcRequests.GetStatus();
@@ -677,6 +679,17 @@ namespace LC2Monitor.BL
           semaphore.Release();
         }
       });
+    }
+
+    private void printInformation(PLCInfo info)
+    {
+      if (info == null)
+      {
+        OnLogUpdated?.Invoke("PLC info is null");
+        return;
+      }
+
+      OnLogUpdated?.Invoke($"PLC: SN={info.SerialNumber}, FW={info.MajorVersion}.{info.MinorVersion}.{info.PatchVersion}");
     }
 
   }
