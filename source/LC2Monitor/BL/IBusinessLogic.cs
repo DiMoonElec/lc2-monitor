@@ -27,6 +27,7 @@ namespace LC2Monitor.BL
     event Action InstantVariablesPoll;
     event Action<VariablesDump> VariablesDumpUpdated;
     event Action<int, int, int> UpdateMetrics;
+    event Action<DateTime> DisplayRTCTime;
 
     void Init();
     void LoadProject(string filePath);

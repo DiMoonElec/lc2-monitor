@@ -404,6 +404,20 @@ namespace LC2Monitor
         throw new InvalidOperationException("Invalud response from controller.");
     }
 
+    public uint GetRTCTimestamp()
+    {
+      List<byte> req = new List<byte>();
+      req.Add(0x1D); // CMD_GET_RTC_TIMESTAMP
+
+      var resp = requestManager.SendRequest(req.ToArray());
+
+      if (resp == null || resp.Length < 4)
+        throw new InvalidOperationException("Invalid response from controller.");
+
+      return BitConverter.ToUInt32(resp, 0);
+    }
+
+
     public SaveProgramResult SaveProgramToFlash()
     {
       List<byte> req = new List<byte>();

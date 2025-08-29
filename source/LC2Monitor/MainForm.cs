@@ -160,6 +160,14 @@ namespace LC2Monitor
       });
     }
 
+    public void DisplayRTCTime(DateTime dateTime)
+    {
+      this.InvokeIfRequired(() =>
+      {
+        lblRTCValue.Text = dateTime.ToString();
+      });
+    }
+
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
       // Создаем диалог выбора файла

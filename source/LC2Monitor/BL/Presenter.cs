@@ -35,6 +35,7 @@ namespace LC2Monitor.BL
       _logic.OnStatusbarUpdated += (connection, plc) => _view.UpdateStatus(connection, plc);
       _logic.OnUpdateControlStates += (isConnected, isProjectLoaded, plcStatus) => _view.UpdateControlStates(isConnected, isProjectLoaded, plcStatus);
       _logic.UpdateMetrics += (CyclePeriod, CycleDuration, CycleDurationMax) => _view.DisplayMetrics(CyclePeriod, CycleDuration, CycleDurationMax);
+      _logic.DisplayRTCTime += (dateTime) => _view.DisplayRTCTime(dateTime);
 
       _logic.OnVariablesUpdated += _view.UpdateVariablesList;
 

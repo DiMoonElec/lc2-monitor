@@ -8,6 +8,7 @@ using DebugViews.DataClasses;
 using LC2Monitor.MISC;
 using LC2.LCCompiler;
 using Serilog;
+using System.Windows.Forms;
 
 namespace LC2Monitor.BL
 {
@@ -22,6 +23,7 @@ namespace LC2Monitor.BL
     public event Action InstantVariablesPoll;
     public event Action<VariablesDump> VariablesDumpUpdated;
     public event Action<int, int, int> UpdateMetrics;
+    public event Action<DateTime> DisplayRTCTime;
 
     private SerialPLCConnector plcConnector;
     //private TcpPLCConnector plcConnector;
@@ -39,7 +41,7 @@ namespace LC2Monitor.BL
     object lockPLCStatus = new object();
 
     private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-
+    private CancellationTokenSource _pollingCancellationTokenSource;
 
     private bool isConnected
     {
@@ -55,6 +57,10 @@ namespace LC2Monitor.BL
             plcRequests.ConnectionError += PlcRequests_ConnectionError;
             plcRequests.PLCStatusChanged += PlcRequests_PLCStatusChanged;
             OnLogUpdated?.Invoke("Connected to PLC.");
+
+            //Запуск цикла опроса
+            _pollingCancellationTokenSource = new CancellationTokenSource();
+            Task.Run(() => pollingLoop(_pollingCancellationTokenSource.Token));
           }
           if (value == false)
           {
@@ -62,6 +68,9 @@ namespace LC2Monitor.BL
             plcRequests.PLCStatusChanged -= PlcRequests_PLCStatusChanged;
             OnLogUpdated?.Invoke("Disconnected from PLC.");
             plcStatus = PLCStatus.Disconnected;
+
+            //Останов цикла опроса
+            _pollingCancellationTokenSource?.Cancel();
           }
 
           _isConnected = value;
@@ -690,6 +699,34 @@ namespace LC2Monitor.BL
       }
 
       OnLogUpdated?.Invoke($"PLC: SN={info.SerialNumber}, FW={info.MajorVersion}.{info.MinorVersion}.{info.PatchVersion}");
+    }
+
+    private async Task pollingLoop(CancellationToken token)
+    {
+      while (!token.IsCancellationRequested)
+      {
+        try
+        {
+          var timestamp = plcRequests.GetRTCTimestamp();
+          DateTime startDate = new DateTime(2001, 1, 1, 0, 0, 0); //Начало эпохи RTC
+          DateTime dateTime = startDate.AddSeconds(timestamp); // Добавляем к ней timestamp
+          DisplayRTCTime?.Invoke(dateTime);
+
+          // Задержка между циклами
+          await Task.Delay(250, token);
+          //OnLogUpdated?.Invoke("Info: cycle 250ms");
+        }
+        catch (OperationCanceledException)
+        {
+          // Прерывание цикла
+          break;
+        }
+        catch (Exception ex)
+        {
+          // логирование ошибок
+          OnLogUpdated?.Invoke($"Error: {ex.Message}");
+        }
+      }
     }
 
   }
