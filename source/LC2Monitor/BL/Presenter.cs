@@ -10,12 +10,17 @@ namespace LC2Monitor.BL
   {
     private readonly IView _view;
     private readonly IBusinessLogic _logic;
+    private readonly Func<IDateTimeInputView> _dateTimeInputFactory;
+
     private CancellationTokenSource _pollingCancellationTokenSource;
     private AutoResetEvent _variablesUpdateEvent = new AutoResetEvent(false);
-    public Presenter(IView view, IBusinessLogic logic)
+    public Presenter(IView view,
+      Func<IDateTimeInputView> dateTimeInputFactory,
+      IBusinessLogic logic)
     {
       _view = view;
       _logic = logic;
+      _dateTimeInputFactory = dateTimeInputFactory;
 
       _view.FormLoad += () => _logic.Init();
       _view.OnOpenProject += (file) => _logic.LoadProject(file);
@@ -28,7 +33,19 @@ namespace LC2Monitor.BL
       _view.OnStepClicked += () => _logic.CyclePlc();
       _view.OnConnectMenuOpening += _view_OnConnectMenuOpening;
       _view.VariableViewerValueChanged += (element) => _logic.VariableViewerValueChanged(element);
-      _view.OnRTCSyncClicked += () => _logic.RTCSync();
+      _view.OnRTCSyncWithPCClicked += () => _logic.RTCSyncWithPC();
+      _view.OnRTCSyncSetDateTimeClicked += () =>
+      {
+        using (var inputForm = dateTimeInputFactory())
+        {
+          if (inputForm.ShowDialog() == DialogResult.OK)
+          {
+            DateTime dt = inputForm.SelectedDateTime;
+            _logic.RTCSync(dt);
+          }
+        }
+      };
+
       _view.OnSaveProgramToFlashClicked += () => _logic.SaveProgramToFlash();
 
       _logic.OnLogUpdated += _view.UpdateLog;

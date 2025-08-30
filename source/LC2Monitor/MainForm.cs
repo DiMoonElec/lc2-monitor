@@ -20,14 +20,16 @@ namespace LC2Monitor
     public event Action<object, EventArgs> OnConnectMenuOpening;
     public event Action<DataElementBase> VariableViewerValueChanged;
     public event Action FormLoad;
-    public event Action OnRTCSyncClicked;
+    public event Action OnRTCSyncWithPCClicked;
+    public event Action OnRTCSyncSetDateTimeClicked;
     public event Action OnSaveProgramToFlashClicked;
 
     public MainForm()
     {
       InitializeComponent();
       disconnectToolStripMenuItem.Click += (s, e) => OnDisconnectClicked?.Invoke();
-      rTCSyncToolStripMenuItem.Click += (s, e) => OnRTCSyncClicked?.Invoke();
+      rtcSyncWithPcStripMenuItem.Click += (s, e) => OnRTCSyncWithPCClicked?.Invoke();
+      rtcSetDateTimeStripMenuItem.Click += (s, e) => OnRTCSyncSetDateTimeClicked?.Invoke();
       saveProgramToFlashToolStripMenuItem.Click += (s, e) => OnSaveProgramToFlashClicked?.Invoke();
 
 

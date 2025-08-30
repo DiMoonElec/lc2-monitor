@@ -35,7 +35,10 @@ namespace LC2Monitor
 
         var mainForm = new MainForm(); // Создание главной формы
         var businessLogic = new BusinessLogic(); // Создание бизнес-логики
-        var presenter = new Presenter(mainForm, businessLogic); // Создание Presenter и связывание с формой и бизнес-логикой
+        var presenter = new Presenter(mainForm,
+          () => new DateTimeInputForm(BusinessLogic.RTCMinDateTime, BusinessLogic.RTCMaxDateTime),
+          businessLogic); // Создание Presenter и связывание с формой и бизнес-логикой
+
         Application.Run(mainForm); // Запуск приложения
       }
       catch (Exception ex)

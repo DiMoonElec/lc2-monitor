@@ -47,6 +47,7 @@
       this.toolStripStatusLabel6 = new System.Windows.Forms.ToolStripStatusLabel();
       this.toolStripStatusLabel8 = new System.Windows.Forms.ToolStripStatusLabel();
       this.lblRTCValue = new System.Windows.Forms.ToolStripStatusLabel();
+      this.toolStripStatusLabel9 = new System.Windows.Forms.ToolStripStatusLabel();
       this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
       this.lblPLCCycle = new System.Windows.Forms.ToolStripStatusLabel();
       this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -67,7 +68,8 @@
       this.rTCSyncToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.lCVMDumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.toolStripStatusLabel9 = new System.Windows.Forms.ToolStripStatusLabel();
+      this.rtcSyncWithPcStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.rtcSetDateTimeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
       this.splitContainer1.Panel1.SuspendLayout();
       this.splitContainer1.Panel2.SuspendLayout();
@@ -101,7 +103,7 @@
       // 
       this.splitContainer1.Panel2.Controls.Add(this.variableViewer);
       this.splitContainer1.Size = new System.Drawing.Size(772, 327);
-      this.splitContainer1.SplitterDistance = 425;
+      this.splitContainer1.SplitterDistance = 426;
       this.splitContainer1.SplitterWidth = 3;
       this.splitContainer1.TabIndex = 2;
       // 
@@ -122,7 +124,7 @@
       // splitContainer2.Panel2
       // 
       this.splitContainer2.Panel2.Controls.Add(this.logsListBox);
-      this.splitContainer2.Size = new System.Drawing.Size(425, 327);
+      this.splitContainer2.Size = new System.Drawing.Size(426, 327);
       this.splitContainer2.SplitterDistance = 113;
       this.splitContainer2.SplitterWidth = 3;
       this.splitContainer2.TabIndex = 0;
@@ -139,7 +141,7 @@
       this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
       this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
       this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 99F));
-      this.tableLayoutPanel3.Size = new System.Drawing.Size(423, 111);
+      this.tableLayoutPanel3.Size = new System.Drawing.Size(424, 111);
       this.tableLayoutPanel3.TabIndex = 5;
       // 
       // tableLayoutPanel4
@@ -159,7 +161,7 @@
       this.tableLayoutPanel4.Name = "tableLayoutPanel4";
       this.tableLayoutPanel4.RowCount = 1;
       this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 51F));
-      this.tableLayoutPanel4.Size = new System.Drawing.Size(417, 51);
+      this.tableLayoutPanel4.Size = new System.Drawing.Size(418, 51);
       this.tableLayoutPanel4.TabIndex = 5;
       // 
       // btnStep
@@ -198,7 +200,7 @@
       this.btnSendBinary.Dock = System.Windows.Forms.DockStyle.Fill;
       this.btnSendBinary.Location = new System.Drawing.Point(335, 3);
       this.btnSendBinary.Name = "btnSendBinary";
-      this.btnSendBinary.Size = new System.Drawing.Size(79, 45);
+      this.btnSendBinary.Size = new System.Drawing.Size(80, 45);
       this.btnSendBinary.TabIndex = 3;
       this.btnSendBinary.Text = "Download";
       this.btnSendBinary.UseVisualStyleBackColor = true;
@@ -210,7 +212,7 @@
       this.logsListBox.Location = new System.Drawing.Point(0, 0);
       this.logsListBox.Margin = new System.Windows.Forms.Padding(2);
       this.logsListBox.Name = "logsListBox";
-      this.logsListBox.Size = new System.Drawing.Size(423, 209);
+      this.logsListBox.Size = new System.Drawing.Size(424, 209);
       this.logsListBox.TabIndex = 0;
       // 
       // variableViewer
@@ -219,7 +221,7 @@
       this.variableViewer.Location = new System.Drawing.Point(0, 0);
       this.variableViewer.Margin = new System.Windows.Forms.Padding(2);
       this.variableViewer.Name = "variableViewer";
-      this.variableViewer.Size = new System.Drawing.Size(342, 325);
+      this.variableViewer.Size = new System.Drawing.Size(341, 325);
       this.variableViewer.TabIndex = 1;
       this.variableViewer.VisibleLiveColumn = true;
       // 
@@ -296,6 +298,12 @@
       this.lblRTCValue.Name = "lblRTCValue";
       this.lblRTCValue.Size = new System.Drawing.Size(22, 17);
       this.lblRTCValue.Text = "---";
+      // 
+      // toolStripStatusLabel9
+      // 
+      this.toolStripStatusLabel9.Name = "toolStripStatusLabel9";
+      this.toolStripStatusLabel9.Size = new System.Drawing.Size(16, 17);
+      this.toolStripStatusLabel9.Text = "   ";
       // 
       // toolStripStatusLabel4
       // 
@@ -423,6 +431,9 @@
       // 
       // rTCSyncToolStripMenuItem
       // 
+      this.rTCSyncToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.rtcSyncWithPcStripMenuItem,
+            this.rtcSetDateTimeStripMenuItem});
       this.rTCSyncToolStripMenuItem.Name = "rTCSyncToolStripMenuItem";
       this.rTCSyncToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
       this.rTCSyncToolStripMenuItem.Text = "RTC Sync";
@@ -438,11 +449,17 @@
       this.lCVMDumpToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
       this.lCVMDumpToolStripMenuItem.Text = "LCVM Dump";
       // 
-      // toolStripStatusLabel9
+      // RTCSyncWithPCToolStripMenuItem
       // 
-      this.toolStripStatusLabel9.Name = "toolStripStatusLabel9";
-      this.toolStripStatusLabel9.Size = new System.Drawing.Size(16, 17);
-      this.toolStripStatusLabel9.Text = "   ";
+      this.rtcSyncWithPcStripMenuItem.Name = "RTCSyncWithPCToolStripMenuItem";
+      this.rtcSyncWithPcStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      this.rtcSyncWithPcStripMenuItem.Text = "Sync with PC Time";
+      // 
+      // RTCSyncInputDateTimeToolStripMenuItem
+      // 
+      this.rtcSetDateTimeStripMenuItem.Name = "RTCSyncInputDateTimeToolStripMenuItem";
+      this.rtcSetDateTimeStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      this.rtcSetDateTimeStripMenuItem.Text = "Set Date and Time…";
       // 
       // MainForm
       // 
@@ -517,6 +534,8 @@
     private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel8;
     private System.Windows.Forms.ToolStripStatusLabel lblRTCValue;
     private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel9;
+    private System.Windows.Forms.ToolStripMenuItem rtcSyncWithPcStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem rtcSetDateTimeStripMenuItem;
   }
 }
 

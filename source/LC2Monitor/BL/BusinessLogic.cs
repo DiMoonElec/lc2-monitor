@@ -14,6 +14,9 @@ namespace LC2Monitor.BL
 {
   public class BusinessLogic : IBusinessLogic
   {
+    public static readonly DateTime RTCMinDateTime = new DateTime(2001, 1, 1, 0, 0, 0);
+    public static readonly DateTime RTCMaxDateTime = new DateTime(2099, 12, 31, 23, 59, 59);
+
     public event Action<string> OnLogUpdated;
     public event Action<string, string> OnStatusbarUpdated;
     public event Action<IEnumerable<DataElementBase>> OnVariablesUpdated;
@@ -444,7 +447,7 @@ namespace LC2Monitor.BL
       plcRequests.PLCSetMemory((uint)element.Address, bytes);
     }
 
-    public void RTCSync()
+    public void RTCSync(DateTime dt)
     {
       if (plcStatus == PLCStatus.Disconnected)
         return;
@@ -453,21 +456,15 @@ namespace LC2Monitor.BL
       {
         try
         {
-          // Установим начальную дату 01 янв 2001 00:00:00
-          DateTime startDate = new DateTime(2001, 1, 1, 0, 0, 0);
-
-          // Получим текущее время
-          DateTime currentDate = DateTime.Now;
-
           // Вычислим разницу
-          TimeSpan timeSpan = currentDate - startDate;
+          TimeSpan timeSpan = dt - RTCMinDateTime;
 
           // Получим общее количество секунд
           var totalSeconds = (uint)timeSpan.TotalSeconds;
 
           plcRequests.SetRTCTimestamp(totalSeconds);
 
-          var msg = $"Time is synchronized, TimeStamp={totalSeconds}";
+          var msg = $"Time is synchronized: {dt.ToString()}";
           OnLogUpdated?.Invoke(msg);
           /*
           plcRequests.GetRuntimeMetrics(out int CyclePeriod,
@@ -485,6 +482,11 @@ namespace LC2Monitor.BL
           OnLogUpdated?.Invoke(msg);
         }
       });
+    }
+
+    public void RTCSyncWithPC()
+    {
+      RTCSync(DateTime.Now);
     }
 
     public void GetMetrics()
@@ -708,7 +710,7 @@ namespace LC2Monitor.BL
         try
         {
           var timestamp = plcRequests.GetRTCTimestamp();
-          DateTime startDate = new DateTime(2001, 1, 1, 0, 0, 0); //Начало эпохи RTC
+          DateTime startDate = RTCMinDateTime; //Начало эпохи RTC
           DateTime dateTime = startDate.AddSeconds(timestamp); // Добавляем к ней timestamp
           DisplayRTCTime?.Invoke(dateTime);
 
@@ -728,7 +730,6 @@ namespace LC2Monitor.BL
         }
       }
     }
-
   }
 
 }

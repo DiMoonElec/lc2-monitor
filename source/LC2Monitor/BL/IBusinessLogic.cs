@@ -43,7 +43,8 @@ namespace LC2Monitor.BL
     void LCVMSaveDump(string file);
     void LCVMPrintDump();
     void GetMetrics();
-    void RTCSync();
+    void RTCSyncWithPC();
+    void RTCSync(DateTime dt);
     void SaveProgramToFlash();
   }
 
