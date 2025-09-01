@@ -53,7 +53,7 @@ namespace LC2Monitor.BL
       {
         lock (lockIsConnected)
         {
-          Log.Information("(BL) IsConnected switch to '{0}'", value.ToString());
+          Log.Debug("(BL) IsConnected switch to '{0}'", value.ToString());
 
           if (value == true)
           {
@@ -89,7 +89,7 @@ namespace LC2Monitor.BL
       {
         lock (lockPLCStatus)
         {
-          Log.Information("(BL) PLCStatus switch to '{0}'", value.ToString());
+          Log.Debug("(BL) PLCStatus switch to '{0}'", value.ToString());
 
           if (value == PLCStatus.Run)
           {
@@ -152,7 +152,7 @@ namespace LC2Monitor.BL
       {
         lock (lockProjectIsLoaded)
         {
-          Log.Information("(BL) ProjectIsLoaded switch to '{0}'", value.ToString());
+          Log.Debug("(BL) ProjectIsLoaded switch to '{0}'", value.ToString());
 
           if (value == true)
           {
@@ -331,7 +331,7 @@ namespace LC2Monitor.BL
               {
                 var msg = "Continue";
                 OnLogUpdated?.Invoke(msg);
-                Log.Information($"(BL) {msg}");
+                Log.Debug($"(BL) {msg}");
               }
               break;
 
@@ -435,7 +435,7 @@ namespace LC2Monitor.BL
         return;
 
 
-      Log.Information("(BL) Variable '{0}@{1}' changed to '{2}'",
+      Log.Debug("(BL) Variable '{0}@{1}' changed to '{2}'",
         element.Name,
         element.Address.ToString(),
         element.Value);
@@ -541,13 +541,13 @@ namespace LC2Monitor.BL
         {
           try
           {
-            Log.Information("(BL) Start get LCVM Dump");
+            Log.Debug("(BL) Start get LCVM Dump");
             var dump = GetLCVMDump();
 
             var dumpReport = dump.ToString();
 
             OnLogUpdated?.Invoke(dumpReport);
-            Log.Information($"(BL) {dumpReport}");
+            Log.Debug($"(BL) {dumpReport}");
           }
           catch (Exception ex)
           {
@@ -565,7 +565,7 @@ namespace LC2Monitor.BL
         || plcStatus == PLCStatus.Pause
         || plcStatus == PLCStatus.Exception)
       {
-        Log.Information("(BL) Start save LCVM Dump");
+        Log.Debug("(BL) Start save LCVM Dump");
         var dump = GetLCVMDump();
         dump.Save(file);
 
@@ -574,8 +574,8 @@ namespace LC2Monitor.BL
         OnLogUpdated?.Invoke($"Dump saved to file: '{file}'");
         OnLogUpdated?.Invoke(dumpReport);
 
-        Log.Information($"(BL) Dump saved to file '{file}'");
-        Log.Information($"(BL) {dumpReport}");
+        Log.Debug($"(BL) Dump saved to file '{file}'");
+        Log.Debug($"(BL) {dumpReport}");
       }
     }
 
@@ -589,7 +589,7 @@ namespace LC2Monitor.BL
         {
           try
           {
-            Log.Information("(BL) Save program to flash...");
+            Log.Debug("(BL) Save program to flash...");
 
             var result = plcRequests.SaveProgramToFlash();
 
@@ -627,7 +627,7 @@ namespace LC2Monitor.BL
             }
 
             OnLogUpdated?.Invoke(msg);
-            Log.Information($"(BL) {msg}");
+            Log.Debug($"(BL) {msg}");
           }
           catch (Exception ex)
           {

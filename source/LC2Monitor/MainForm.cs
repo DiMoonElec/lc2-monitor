@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using DebugViews.DataClasses;
@@ -261,6 +262,18 @@ namespace LC2Monitor
 
       // Сохранение настроек
       Properties.Settings.Default.Save();
+    }
+
+    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+      string msg = "";
+      msg += "LC2 Monitor\r\n";
+      msg += "Autor: DiMoon Electronics\r\n";
+      msg += "Website: lc2.dimoon.ru";
+      msg += "\r\n";
+      msg += $"Version: {version}";
+      MessageBox.Show(msg, "About", MessageBoxButtons.OK);
     }
   }
 }
