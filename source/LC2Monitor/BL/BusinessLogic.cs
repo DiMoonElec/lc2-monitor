@@ -8,11 +8,15 @@ using DebugViews.DataClasses;
 using LC2Monitor.MISC;
 using LC2.LCCompiler;
 using Serilog;
+using System.Windows.Forms;
 
 namespace LC2Monitor.BL
 {
   public class BusinessLogic : IBusinessLogic
   {
+    public static readonly DateTime RTCMinDateTime = new DateTime(2001, 1, 1, 0, 0, 0);
+    public static readonly DateTime RTCMaxDateTime = new DateTime(2099, 12, 31, 23, 59, 59);
+
     public event Action<string> OnLogUpdated;
     public event Action<string, string> OnStatusbarUpdated;
     public event Action<IEnumerable<DataElementBase>> OnVariablesUpdated;
@@ -22,6 +26,7 @@ namespace LC2Monitor.BL
     public event Action InstantVariablesPoll;
     public event Action<VariablesDump> VariablesDumpUpdated;
     public event Action<int, int, int> UpdateMetrics;
+    public event Action<DateTime> DisplayRTCTime;
 
     private SerialPLCConnector plcConnector;
     //private TcpPLCConnector plcConnector;
@@ -39,7 +44,7 @@ namespace LC2Monitor.BL
     object lockPLCStatus = new object();
 
     private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
-
+    private CancellationTokenSource _pollingCancellationTokenSource;
 
     private bool isConnected
     {
@@ -48,13 +53,17 @@ namespace LC2Monitor.BL
       {
         lock (lockIsConnected)
         {
-          Log.Information("(BL) IsConnected switch to '{0}'", value.ToString());
+          Log.Debug("(BL) IsConnected switch to '{0}'", value.ToString());
 
           if (value == true)
           {
             plcRequests.ConnectionError += PlcRequests_ConnectionError;
             plcRequests.PLCStatusChanged += PlcRequests_PLCStatusChanged;
             OnLogUpdated?.Invoke("Connected to PLC.");
+
+            //Запуск цикла опроса
+            _pollingCancellationTokenSource = new CancellationTokenSource();
+            Task.Run(() => pollingLoop(_pollingCancellationTokenSource.Token));
           }
           if (value == false)
           {
@@ -62,6 +71,9 @@ namespace LC2Monitor.BL
             plcRequests.PLCStatusChanged -= PlcRequests_PLCStatusChanged;
             OnLogUpdated?.Invoke("Disconnected from PLC.");
             plcStatus = PLCStatus.Disconnected;
+
+            //Останов цикла опроса
+            _pollingCancellationTokenSource?.Cancel();
           }
 
           _isConnected = value;
@@ -77,7 +89,7 @@ namespace LC2Monitor.BL
       {
         lock (lockPLCStatus)
         {
-          Log.Information("(BL) PLCStatus switch to '{0}'", value.ToString());
+          Log.Debug("(BL) PLCStatus switch to '{0}'", value.ToString());
 
           if (value == PLCStatus.Run)
           {
@@ -140,7 +152,7 @@ namespace LC2Monitor.BL
       {
         lock (lockProjectIsLoaded)
         {
-          Log.Information("(BL) ProjectIsLoaded switch to '{0}'", value.ToString());
+          Log.Debug("(BL) ProjectIsLoaded switch to '{0}'", value.ToString());
 
           if (value == true)
           {
@@ -229,6 +241,8 @@ namespace LC2Monitor.BL
           plcConnector.Open(portName, 115200);
           //plcConnector.Connect("192.168.88.233", 8888);
           plcRequests.Ping();
+          var info = plcRequests.GetInformation();
+          printInformation(info);
           isConnected = true;
 
           plcStatus = plcRequests.GetStatus();
@@ -317,7 +331,7 @@ namespace LC2Monitor.BL
               {
                 var msg = "Continue";
                 OnLogUpdated?.Invoke(msg);
-                Log.Information($"(BL) {msg}");
+                Log.Debug($"(BL) {msg}");
               }
               break;
 
@@ -421,7 +435,7 @@ namespace LC2Monitor.BL
         return;
 
 
-      Log.Information("(BL) Variable '{0}@{1}' changed to '{2}'",
+      Log.Debug("(BL) Variable '{0}@{1}' changed to '{2}'",
         element.Name,
         element.Address.ToString(),
         element.Value);
@@ -433,7 +447,7 @@ namespace LC2Monitor.BL
       plcRequests.PLCSetMemory((uint)element.Address, bytes);
     }
 
-    public void RTCSync()
+    public void RTCSync(DateTime dt)
     {
       if (plcStatus == PLCStatus.Disconnected)
         return;
@@ -442,21 +456,15 @@ namespace LC2Monitor.BL
       {
         try
         {
-          // Установим начальную дату 01 янв 2001 00:00:00
-          DateTime startDate = new DateTime(2001, 1, 1, 0, 0, 0);
-
-          // Получим текущее время
-          DateTime currentDate = DateTime.Now;
-
           // Вычислим разницу
-          TimeSpan timeSpan = currentDate - startDate;
+          TimeSpan timeSpan = dt - RTCMinDateTime;
 
           // Получим общее количество секунд
           var totalSeconds = (uint)timeSpan.TotalSeconds;
 
           plcRequests.SetRTCTimestamp(totalSeconds);
 
-          var msg = $"Time is synchronized, TimeStamp={totalSeconds}";
+          var msg = $"Time is synchronized: {dt.ToString()}";
           OnLogUpdated?.Invoke(msg);
           /*
           plcRequests.GetRuntimeMetrics(out int CyclePeriod,
@@ -474,6 +482,11 @@ namespace LC2Monitor.BL
           OnLogUpdated?.Invoke(msg);
         }
       });
+    }
+
+    public void RTCSyncWithPC()
+    {
+      RTCSync(DateTime.Now);
     }
 
     public void GetMetrics()
@@ -528,13 +541,13 @@ namespace LC2Monitor.BL
         {
           try
           {
-            Log.Information("(BL) Start get LCVM Dump");
+            Log.Debug("(BL) Start get LCVM Dump");
             var dump = GetLCVMDump();
 
             var dumpReport = dump.ToString();
 
             OnLogUpdated?.Invoke(dumpReport);
-            Log.Information($"(BL) {dumpReport}");
+            Log.Debug($"(BL) {dumpReport}");
           }
           catch (Exception ex)
           {
@@ -552,7 +565,7 @@ namespace LC2Monitor.BL
         || plcStatus == PLCStatus.Pause
         || plcStatus == PLCStatus.Exception)
       {
-        Log.Information("(BL) Start save LCVM Dump");
+        Log.Debug("(BL) Start save LCVM Dump");
         var dump = GetLCVMDump();
         dump.Save(file);
 
@@ -561,8 +574,8 @@ namespace LC2Monitor.BL
         OnLogUpdated?.Invoke($"Dump saved to file: '{file}'");
         OnLogUpdated?.Invoke(dumpReport);
 
-        Log.Information($"(BL) Dump saved to file '{file}'");
-        Log.Information($"(BL) {dumpReport}");
+        Log.Debug($"(BL) Dump saved to file '{file}'");
+        Log.Debug($"(BL) {dumpReport}");
       }
     }
 
@@ -576,7 +589,7 @@ namespace LC2Monitor.BL
         {
           try
           {
-            Log.Information("(BL) Save program to flash...");
+            Log.Debug("(BL) Save program to flash...");
 
             var result = plcRequests.SaveProgramToFlash();
 
@@ -614,7 +627,7 @@ namespace LC2Monitor.BL
             }
 
             OnLogUpdated?.Invoke(msg);
-            Log.Information($"(BL) {msg}");
+            Log.Debug($"(BL) {msg}");
           }
           catch (Exception ex)
           {
@@ -679,6 +692,44 @@ namespace LC2Monitor.BL
       });
     }
 
+    private void printInformation(PLCInfo info)
+    {
+      if (info == null)
+      {
+        OnLogUpdated?.Invoke("PLC info is null");
+        return;
+      }
+
+      OnLogUpdated?.Invoke($"PLC: SN={info.SerialNumber}, FW={info.MajorVersion}.{info.MinorVersion}.{info.PatchVersion}");
+    }
+
+    private async Task pollingLoop(CancellationToken token)
+    {
+      while (!token.IsCancellationRequested)
+      {
+        try
+        {
+          var timestamp = plcRequests.GetRTCTimestamp();
+          DateTime startDate = RTCMinDateTime; //Начало эпохи RTC
+          DateTime dateTime = startDate.AddSeconds(timestamp); // Добавляем к ней timestamp
+          DisplayRTCTime?.Invoke(dateTime);
+
+          // Задержка между циклами
+          await Task.Delay(250, token);
+          //OnLogUpdated?.Invoke("Info: cycle 250ms");
+        }
+        catch (OperationCanceledException)
+        {
+          // Прерывание цикла
+          break;
+        }
+        catch (Exception ex)
+        {
+          // логирование ошибок
+          OnLogUpdated?.Invoke($"Error: {ex.Message}");
+        }
+      }
+    }
   }
 
 }

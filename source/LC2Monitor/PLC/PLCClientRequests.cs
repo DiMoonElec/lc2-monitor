@@ -46,6 +46,21 @@ namespace LC2Monitor
     Return = (byte)1,
   }
 
+  public class PLCInfo
+  {
+    public string SerialNumber { get; private set; }
+    public int MajorVersion { get; private set; }
+    public int MinorVersion { get; private set; }
+    public int PatchVersion { get; private set; }
+
+    public PLCInfo(string serialNumber, int majorVersion, int minorVersion, int patchVersion)
+    {
+      SerialNumber = serialNumber;
+      MajorVersion = majorVersion;
+      MinorVersion = minorVersion;
+      PatchVersion = patchVersion;
+    }
+  }
 
   internal class PLCClientRequests
   {
@@ -103,6 +118,32 @@ namespace LC2Monitor
     public void Ping()
     {
       var resp = requestManager.SendRequest(new byte[] { 0x01 });
+    }
+
+    public PLCInfo GetInformation()
+    {
+      var resp = requestManager.SendRequest(new byte[] { 0x03 }); // CMD_GET_INFO
+
+      if (resp.Length < 3)
+        throw new InvalidOperationException("Invalud response from controller.");
+
+      int major = resp[0];
+      int minor = resp[1];
+      int patch = resp[2];
+
+      string serial;
+
+      if (resp.Length <= 3)
+      {
+        serial = "MISSING"; // Серийный номер отсутствует
+      }
+      else
+      {
+        var raw = resp.AsSpan(3);
+        serial = SafeUtf8Decode(raw);
+      }
+
+      return new PLCInfo(serial, major, minor, patch);
     }
 
     public PLCStatus GetStatus()
@@ -363,6 +404,20 @@ namespace LC2Monitor
         throw new InvalidOperationException("Invalud response from controller.");
     }
 
+    public uint GetRTCTimestamp()
+    {
+      List<byte> req = new List<byte>();
+      req.Add(0x1D); // CMD_GET_RTC_TIMESTAMP
+
+      var resp = requestManager.SendRequest(req.ToArray());
+
+      if (resp == null || resp.Length < 4)
+        throw new InvalidOperationException("Invalid response from controller.");
+
+      return BitConverter.ToUInt32(resp, 0);
+    }
+
+
     public SaveProgramResult SaveProgramToFlash()
     {
       List<byte> req = new List<byte>();
@@ -397,5 +452,77 @@ namespace LC2Monitor
           return SaveProgramResult.UnknownError;
       }
     }
+
+    private string SafeUtf8Decode(ReadOnlySpan<byte> data)
+    {
+      var sb = new System.Text.StringBuilder();
+
+      var decoder = System.Text.Encoding.UTF8.GetDecoder();
+      char[] charBuffer = new char[2];
+      byte[] singleByte = new byte[1];
+
+      int i = 0;
+      while (i < data.Length)
+      {
+        // Пытаемся декодировать от текущей позиции
+        int byteCount = 1;
+        int charCount;
+
+        try
+        {
+          int remaining = data.Length - i;
+          if ((data[i] & 0x80) == 0x00)
+          {
+            // ASCII, 1 байт
+            singleByte[0] = data[i];
+            charCount = decoder.GetChars(singleByte, 0, 1, charBuffer, 0);
+            sb.Append(charBuffer[0]);
+            i += 1;
+          }
+          else if (remaining >= 2 && (data[i] & 0xE0) == 0xC0)
+          {
+            byteCount = 2;
+          }
+          else if (remaining >= 3 && (data[i] & 0xF0) == 0xE0)
+          {
+            byteCount = 3;
+          }
+          else if (remaining >= 4 && (data[i] & 0xF8) == 0xF0)
+          {
+            byteCount = 4;
+          }
+
+          if (byteCount > 1)
+          {
+            if (i + byteCount > data.Length)
+            {
+              // Неполный символ — выводим как hex
+              sb.Append($"/{data[i]:X2}");
+              i++;
+              continue;
+            }
+
+            var segment = data.Slice(i, byteCount).ToArray();
+            charCount = decoder.GetChars(segment, 0, byteCount, charBuffer, 0);
+
+            if (charCount > 0)
+            {
+              sb.Append(charBuffer[0]);
+            }
+
+            i += byteCount;
+          }
+        }
+        catch
+        {
+          // Некорректный байт — выводим его как /XX
+          sb.Append($"/{data[i]:X2}");
+          i++;
+        }
+      }
+
+      return sb.ToString();
+    }
+
   }
 }

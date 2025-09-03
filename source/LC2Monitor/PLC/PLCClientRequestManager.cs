@@ -37,7 +37,7 @@ namespace LC2Monitor
         // Создаем экземпляр Stopwatch
         Stopwatch stopwatch = Stopwatch.StartNew();
 
-        Log.Information("(PLCClient) Req: {0}", BitConverter.ToString(requestPacket));
+        Log.Verbose("(PLCClient) Req: {0}", BitConverter.ToString(requestPacket));
         server.Write(requestPacket);
 
         if (ResponseEvent.WaitOne(timeoutMs) == false)
@@ -51,7 +51,7 @@ namespace LC2Monitor
         stopwatch.Stop();
 
         // Выводим время выполнения
-        Log.Information("(PLCClient) Elapsed time: {0} ms", stopwatch.ElapsedMilliseconds.ToString());
+        Log.Verbose("(PLCClient) Elapsed time: {0} ms", stopwatch.ElapsedMilliseconds.ToString());
 
         if (ResponseBuffer.Length < 2)
         {
@@ -80,7 +80,7 @@ namespace LC2Monitor
 
       if (packetType == 0x80) // Event packet
       {
-        Log.Information("(PLCClient) Event: {0}", BitConverter.ToString(packet));
+        Log.Verbose("(PLCClient) Event: {0}", BitConverter.ToString(packet));
 
         byte eventId = packet[1];
         byte[] eventData = packet.Length > 2 ? SubArray(packet, 2, packet.Length - 2) : new byte[0];
@@ -88,7 +88,7 @@ namespace LC2Monitor
       }
       else if (packetType == 0x01) // Response packet
       {
-        Log.Information("(PLCClient) Resp: {0}", BitConverter.ToString(packet));
+        Log.Verbose("(PLCClient) Resp: {0}", BitConverter.ToString(packet));
 
         int requestId = packet[1];
 

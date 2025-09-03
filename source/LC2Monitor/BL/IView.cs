@@ -17,7 +17,8 @@ namespace LC2Monitor.BL
     event Action OnStopClicked;
     event Action OnStepClicked;
     event Action<DataElementBase> VariableViewerValueChanged;
-    event Action OnRTCSyncClicked;
+    event Action OnRTCSyncWithPCClicked;
+    event Action OnRTCSyncSetDateTimeClicked;
     event Action OnSaveProgramToFlashClicked;
 
     void UpdateStatus(string connectionStatus, string plcStatus);
@@ -28,5 +29,6 @@ namespace LC2Monitor.BL
     void UpdateControlStates(bool isConnected, bool isProjectLoaded, PLCStatus plcStatus);
     void SetWatchVariables(VariablesDump variablesDump);
     void DisplayMetrics(int cycleValue, int duration, int durationMax);
+    void DisplayRTCTime(DateTime dateTime);
   }
 }

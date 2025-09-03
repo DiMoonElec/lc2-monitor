@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using DebugViews.DataClasses;
@@ -20,14 +21,16 @@ namespace LC2Monitor
     public event Action<object, EventArgs> OnConnectMenuOpening;
     public event Action<DataElementBase> VariableViewerValueChanged;
     public event Action FormLoad;
-    public event Action OnRTCSyncClicked;
+    public event Action OnRTCSyncWithPCClicked;
+    public event Action OnRTCSyncSetDateTimeClicked;
     public event Action OnSaveProgramToFlashClicked;
 
     public MainForm()
     {
       InitializeComponent();
       disconnectToolStripMenuItem.Click += (s, e) => OnDisconnectClicked?.Invoke();
-      rTCSyncToolStripMenuItem.Click += (s, e) => OnRTCSyncClicked?.Invoke();
+      rtcSyncWithPcStripMenuItem.Click += (s, e) => OnRTCSyncWithPCClicked?.Invoke();
+      rtcSetDateTimeStripMenuItem.Click += (s, e) => OnRTCSyncSetDateTimeClicked?.Invoke();
       saveProgramToFlashToolStripMenuItem.Click += (s, e) => OnSaveProgramToFlashClicked?.Invoke();
 
 
@@ -160,6 +163,14 @@ namespace LC2Monitor
       });
     }
 
+    public void DisplayRTCTime(DateTime dateTime)
+    {
+      this.InvokeIfRequired(() =>
+      {
+        lblRTCValue.Text = dateTime.ToString();
+      });
+    }
+
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
       // Создаем диалог выбора файла
@@ -251,6 +262,18 @@ namespace LC2Monitor
 
       // Сохранение настроек
       Properties.Settings.Default.Save();
+    }
+
+    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+      string msg = "";
+      msg += "LC2 Monitor\r\n";
+      msg += "Autor: DiMoon Electronics\r\n";
+      msg += "Website: lc2.dimoon.ru";
+      msg += "\r\n";
+      msg += $"Version: {version}";
+      MessageBox.Show(msg, "About", MessageBoxButtons.OK);
     }
   }
 }
