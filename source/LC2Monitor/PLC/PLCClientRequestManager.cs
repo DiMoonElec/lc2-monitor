@@ -28,46 +28,54 @@ namespace LC2Monitor
     {
       lock (sendLock)
       {
-        RequestId++;
-
-        byte[] requestPacket = CreateRequestPacket(RequestId, data);
-
-        ResponseEvent.Reset();
-
-        // Создаем экземпляр Stopwatch
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
-        Log.Verbose("(PLCClient) Req: {0}", BitConverter.ToString(requestPacket));
-        server.Write(requestPacket);
-
-        if (ResponseEvent.WaitOne(timeoutMs) == false)
+        try
         {
-          string error = "The request timed out or failed.";
-          Log.Error("(PLCClient) Communication error: '{0}'", error);
+          RequestId++;
+
+          byte[] requestPacket = CreateRequestPacket(RequestId, data);
+
+          ResponseEvent.Reset();
+
+          // Создаем экземпляр Stopwatch
+          Stopwatch stopwatch = Stopwatch.StartNew();
+
+          Log.Verbose("(PLCClient) Req: {0}", BitConverter.ToString(requestPacket));
+          server.Write(requestPacket);
+
+          if (ResponseEvent.WaitOne(timeoutMs) == false)
+          {
+            string error = "The request timed out or failed.";
+            Log.Error("(PLCClient) Communication error: '{0}'", error);
+            ConnectionError?.Invoke();
+            throw new TimeoutException(error);
+          }
+          // Останавливаем Stopwatch
+          stopwatch.Stop();
+
+          // Выводим время выполнения
+          Log.Verbose("(PLCClient) Elapsed time: {0} ms", stopwatch.ElapsedMilliseconds.ToString());
+
+          if (ResponseBuffer.Length < 2)
+          {
+            string error = "ResponseBuffer is too short";
+            Log.Error("(PLCClient) Communication error: '{0}'", error);
+            throw new Exception(error);
+          }
+          if (ResponseBuffer[1] != RequestId)
+          {
+            string error = "Invalid response id from remote device";
+            Log.Error("(PLCClient) Communication error: '{0}'", error);
+            throw new Exception(error);
+          }
+
+          var ret = SubArray(ResponseBuffer, 2, ResponseBuffer.Length - 2);
+          return ret;
+        }
+        catch
+        {
           ConnectionError?.Invoke();
-          throw new TimeoutException(error);
+          throw;
         }
-        // Останавливаем Stopwatch
-        stopwatch.Stop();
-
-        // Выводим время выполнения
-        Log.Verbose("(PLCClient) Elapsed time: {0} ms", stopwatch.ElapsedMilliseconds.ToString());
-
-        if (ResponseBuffer.Length < 2)
-        {
-          string error = "ResponseBuffer is too short";
-          Log.Error("(PLCClient) Communication error: '{0}'", error);
-          throw new Exception(error);
-        }
-        if (ResponseBuffer[1] != RequestId)
-        {
-          string error = "Invalid response id from remote device";
-          Log.Error("(PLCClient) Communication error: '{0}'", error);
-          throw new Exception(error);
-        }
-
-        var ret = SubArray(ResponseBuffer, 2, ResponseBuffer.Length - 2);
-        return ret;
       }
     }
 

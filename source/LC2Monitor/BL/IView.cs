@@ -4,7 +4,7 @@ using DebugViews.DataClasses;
 
 namespace LC2Monitor.BL
 {
-  public interface IView
+  public interface IView : IWatchVariablesProvider
   {
     event Action FormLoad;
     event Action<string> OnOpenProject;
@@ -24,9 +24,8 @@ namespace LC2Monitor.BL
     void UpdateStatus(string connectionStatus, string plcStatus);
     void UpdatePortsList(IEnumerable<string> ports);
     void UpdateVariablesList(IEnumerable<DataElementBase> variables);
-    IEnumerable<DataElementBase> GetWatchVariables();
     void UpdateLog(string message);
-    void UpdateControlStates(bool isConnected, bool isProjectLoaded, PLCStatus plcStatus);
+    void UpdateControlStates(bool isConnected, bool isProjectLoaded, ModelState state);
     void SetWatchVariables(VariablesDump variablesDump);
     void DisplayMetrics(int cycleValue, int duration, int durationMax);
     void DisplayRTCTime(DateTime dateTime);

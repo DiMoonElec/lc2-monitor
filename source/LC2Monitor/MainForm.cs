@@ -80,8 +80,8 @@ namespace LC2Monitor
     private void LCVMDumpToolStripMenuItem_Click(object sender, EventArgs e)
     {
       OnDumpPrintClicked?.Invoke();
-      return;
 
+      /*
       // Создаем диалог выбора файла
       SaveFileDialog fileDialog = new SaveFileDialog
       {
@@ -92,6 +92,7 @@ namespace LC2Monitor
       // Открываем диалоговое окно и проверяем, была ли нажата кнопка "ОК"
       if (fileDialog.ShowDialog() == DialogResult.OK)
         OnDumpSaveClicked?.Invoke(fileDialog.FileName);
+      */
     }
 
     public void UpdateStatus(string connectionStatus, string plcStatus)
@@ -117,31 +118,31 @@ namespace LC2Monitor
     }
 
     public void UpdateControlStates(bool isConnected, bool isProjectLoaded,
-      PLCStatus plcStatus)
+      ModelState state)
     {
       this.InvokeIfRequired(() =>
       {
-        btnSendBinary.Enabled = isConnected && isProjectLoaded && plcStatus == PLCStatus.Stop;
+        btnSendBinary.Enabled = isConnected && isProjectLoaded && state == ModelState.Stop;
 
         connectToolStripMenuItem.Enabled = !isConnected;
 
         disconnectToolStripMenuItem.Enabled = isConnected;
 
         btnRun.Enabled = isConnected
-            && (plcStatus == PLCStatus.Stop || plcStatus == PLCStatus.Pause || plcStatus == PLCStatus.Exception);
+            && (state == ModelState.Stop || state == ModelState.Pause || state == ModelState.Exception);
 
         btnStop.Enabled = isConnected
-            && (plcStatus == PLCStatus.Run || plcStatus == PLCStatus.Pause || plcStatus == PLCStatus.Cycle);
+            && (state == ModelState.Run || state == ModelState.Pause || state == ModelState.Cycle);
 
         btnStep.Enabled = isConnected && isProjectLoaded;
 
         lCVMDumpToolStripMenuItem.Enabled = isConnected
-            && (plcStatus == PLCStatus.Stop || plcStatus == PLCStatus.Pause || plcStatus == PLCStatus.Exception);
+            && (state == ModelState.Stop || state == ModelState.Pause || state == ModelState.Exception);
 
         rTCSyncToolStripMenuItem.Enabled = isConnected;
 
         saveProgramToFlashToolStripMenuItem.Enabled = isConnected && isProjectLoaded
-         && (plcStatus == PLCStatus.Stop || plcStatus == PLCStatus.Pause || plcStatus == PLCStatus.Exception);
+         && (state == ModelState.Stop || state == ModelState.Pause || state == ModelState.Exception);
       });
     }
 

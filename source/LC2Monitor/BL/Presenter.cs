@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LC2Monitor.BL
@@ -12,8 +10,6 @@ namespace LC2Monitor.BL
     private readonly IBusinessLogic _logic;
     private readonly Func<IDateTimeInputView> _dateTimeInputFactory;
 
-    private CancellationTokenSource _pollingCancellationTokenSource;
-    private AutoResetEvent _variablesUpdateEvent = new AutoResetEvent(false);
     public Presenter(IView view,
       Func<IDateTimeInputView> dateTimeInputFactory,
       IBusinessLogic logic)
@@ -36,7 +32,7 @@ namespace LC2Monitor.BL
       _view.OnRTCSyncWithPCClicked += () => _logic.RTCSyncWithPC();
       _view.OnRTCSyncSetDateTimeClicked += () =>
       {
-        using (var inputForm = dateTimeInputFactory())
+        using (var inputForm = _dateTimeInputFactory())
         {
           if (inputForm.ShowDialog() == DialogResult.OK)
           {
@@ -45,36 +41,15 @@ namespace LC2Monitor.BL
           }
         }
       };
-
       _view.OnSaveProgramToFlashClicked += () => _logic.SaveProgramToFlash();
 
       _logic.OnLogUpdated += _view.UpdateLog;
       _logic.OnStatusbarUpdated += (connection, plc) => _view.UpdateStatus(connection, plc);
-      _logic.OnUpdateControlStates += (isConnected, isProjectLoaded, plcStatus) => _view.UpdateControlStates(isConnected, isProjectLoaded, plcStatus);
+      _logic.OnUpdateControlStates += (isConnected, isProjectLoaded, state) => _view.UpdateControlStates(isConnected, isProjectLoaded, state);
       _logic.UpdateMetrics += (CyclePeriod, CycleDuration, CycleDurationMax) => _view.DisplayMetrics(CyclePeriod, CycleDuration, CycleDurationMax);
       _logic.DisplayRTCTime += (dateTime) => _view.DisplayRTCTime(dateTime);
-
       _logic.OnVariablesUpdated += _view.UpdateVariablesList;
-
-      _logic.EnableVariablesPoll += () =>
-      {
-        _pollingCancellationTokenSource = new CancellationTokenSource();
-        Task.Run(() => PollingLoop(_pollingCancellationTokenSource.Token));
-      };
-
-      _logic.DisableVariablesPoll += () =>
-      {
-        _pollingCancellationTokenSource?.Cancel();
-        _variablesUpdateEvent.Set();
-      };
-
-      _logic.InstantVariablesPoll += () => { LiveVariablesUpdate(); };
-
-      _logic.VariablesDumpUpdated += (dump) =>
-      {
-        _view.SetWatchVariables(dump);
-        _variablesUpdateEvent.Set();
-      };
+      _logic.VariablesDumpUpdated += (dump) => _view.SetWatchVariables(dump);
     }
 
     private void _view_OnConnectMenuOpening(object sender, EventArgs e)
@@ -112,46 +87,5 @@ namespace LC2Monitor.BL
       var port = (string)currentElement.Tag;
       _logic.ConnectToPlc(port);
     }
-
-    private void LiveVariablesUpdate()
-    {
-      //Список переменных, которые необходимо обновить
-      var variables = _view.GetWatchVariables();
-
-      //Формируем список запросов к областям памяти
-      var requests = DataElementHelper.BuildMemoryRequests(variables, 0);
-
-      //Запустить чтение дампа ОЗУ ПЛК
-      _logic.UpdateMemoryDump(requests);
-    }
-
-    private async Task PollingLoop(CancellationToken token)
-    {
-      _variablesUpdateEvent.Reset();
-
-      while (!token.IsCancellationRequested)
-      {
-        try
-        {
-          LiveVariablesUpdate();
-          _logic.GetMetrics();
-
-          // Задержка между циклами
-          await Task.Delay(1000, token);
-          _variablesUpdateEvent.WaitOne();
-        }
-        catch (OperationCanceledException)
-        {
-          // Прерывание цикла
-          break;
-        }
-        catch (Exception ex)
-        {
-          // Обработка ошибок (например, логирование)
-          _view.UpdateLog($"Error: {ex.Message}");
-        }
-      }
-    }
   }
-
 }

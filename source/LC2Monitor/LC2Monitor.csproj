@@ -94,9 +94,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BL\BusinessLogic.cs" />
+    <Compile Include="BL\BusinessLogicActions.cs" />
+    <Compile Include="BL\BusinessLogicMessageHandler.cs" />
     <Compile Include="BL\IBusinessLogic.cs" />
     <Compile Include="BL\IDateTimeInputView.cs" />
     <Compile Include="BL\IView.cs" />
+    <Compile Include="BL\IWatchVariablesProvider.cs" />
+    <Compile Include="BL\Message\BLMessage.cs" />
+    <Compile Include="BL\Model.cs" />
+    <Compile Include="BL\PeriodicTask.cs" />
     <Compile Include="BL\Presenter.cs" />
     <Compile Include="ControlExtensions.cs" />
     <Compile Include="DateTimeInputForm.cs">

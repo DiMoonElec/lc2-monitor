@@ -20,11 +20,8 @@ namespace LC2Monitor.BL
 
     event Action<string> OnLogUpdated;
     event Action<string, string> OnStatusbarUpdated;
-    event Action<bool, bool, PLCStatus> OnUpdateControlStates;
+    event Action<bool, bool, ModelState> OnUpdateControlStates;
     event Action<IEnumerable<DataElementBase>> OnVariablesUpdated;
-    event Action EnableVariablesPoll;
-    event Action DisableVariablesPoll;
-    event Action InstantVariablesPoll;
     event Action<VariablesDump> VariablesDumpUpdated;
     event Action<int, int, int> UpdateMetrics;
     event Action<DateTime> DisplayRTCTime;
@@ -38,14 +35,11 @@ namespace LC2Monitor.BL
     void StopPlc();
     void CyclePlc();
     IEnumerable<string> GetAvailablePorts();
-    void UpdateMemoryDump(IEnumerable<MemoryRequest> requests);
     void VariableViewerValueChanged(DataElementBase element);
     void LCVMSaveDump(string file);
     void LCVMPrintDump();
-    void GetMetrics();
     void RTCSyncWithPC();
     void RTCSync(DateTime dt);
     void SaveProgramToFlash();
   }
-
 }

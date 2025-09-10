@@ -10,8 +10,7 @@ namespace LC2Monitor
     Run,
     Cycle,
     Pause,
-    Exception,
-    Disconnected
+    Exception
   }
 
   public enum PLCRunStatus

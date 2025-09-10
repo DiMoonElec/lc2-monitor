@@ -20,6 +20,10 @@ namespace LC2Monitor
            .WriteTo.File("logs/app.log", rollingInterval: RollingInterval.Day) // Логирование в файл
            .CreateLogger();
 
+      BusinessLogic businessLogic = null;
+      MainForm mainForm = null;
+      Presenter presenter = null;
+
       try
       {
         Log.Information("Application starting...");
@@ -33,9 +37,9 @@ namespace LC2Monitor
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 
-        var mainForm = new MainForm(); // Создание главной формы
-        var businessLogic = new BusinessLogic(); // Создание бизнес-логики
-        var presenter = new Presenter(mainForm,
+        mainForm = new MainForm(); // Создание главной формы
+        businessLogic = new BusinessLogic(mainForm); // Создание бизнес-логики
+        presenter = new Presenter(mainForm,
           () => new DateTimeInputForm(BusinessLogic.RTCMinDateTime, BusinessLogic.RTCMaxDateTime),
           businessLogic); // Создание Presenter и связывание с формой и бизнес-логикой
 
@@ -47,6 +51,7 @@ namespace LC2Monitor
       }
       finally
       {
+        businessLogic?.Dispose();
         Log.CloseAndFlush(); // Завершаем работу логера
       }
       //Application.Run(new MainForm());
