@@ -97,7 +97,16 @@
     <Compile Include="BL\BusinessLogicActions.cs" />
     <Compile Include="BL\BusinessLogicMessageHandler.cs" />
     <Compile Include="BL\IBusinessLogic.cs" />
+    <Compile Include="BL\IRTCCalibrationInputView.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MISC\RTCACalibrationCalculator.cs" />
     <Compile Include="BL\IDateTimeInputView.cs" />
+    <Compile Include="MISC\IRTCCalibrationCalculator.cs" />
     <Compile Include="BL\IView.cs" />
     <Compile Include="BL\IWatchVariablesProvider.cs" />
     <Compile Include="BL\Message\BLMessage.cs" />
@@ -113,12 +122,6 @@
     </Compile>
     <Compile Include="MISC\LCVMDump.cs" />
     <Compile Include="PLC\IPLCConnector.cs" />
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="MISC\LCProject.cs" />
     <Compile Include="MISC\MemoryAllocationInformationDeserializer.cs" />
     <Compile Include="MISC\MemoryRequest.cs" />
@@ -128,6 +131,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PLC\PLCClientRequestManager.cs" />
+    <Compile Include="RTCCorrectionInputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RTCCorrectionInputForm.Designer.cs">
+      <DependentUpon>RTCCorrectionInputForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="DateTimeInputForm.resx">
       <DependentUpon>DateTimeInputForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -144,6 +153,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="RTCCorrectionInputForm.resx">
+      <DependentUpon>RTCCorrectionInputForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

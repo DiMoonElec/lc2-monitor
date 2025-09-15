@@ -41,6 +41,8 @@ namespace LC2Monitor.BL
           }
         }
       };
+      _view.OnRTCCalibrationClicked += () => _logic.GetRTCCalibrationBegin();
+      _view.OnRTCSetCalibration += (value) => _logic.SetRTCCalibration(value);
       _view.OnSaveProgramToFlashClicked += () => _logic.SaveProgramToFlash();
 
       _logic.OnLogUpdated += _view.UpdateLog;
@@ -50,6 +52,7 @@ namespace LC2Monitor.BL
       _logic.DisplayRTCTime += (dateTime) => _view.DisplayRTCTime(dateTime);
       _logic.OnVariablesUpdated += _view.UpdateVariablesList;
       _logic.VariablesDumpUpdated += (dump) => _view.SetWatchVariables(dump);
+      _logic.RTCCalibrationReceived += (value, calibrationCalculator) => _view.RTCCalibrationShowDialog(value, calibrationCalculator);
     }
 
     private void _view_OnConnectMenuOpening(object sender, EventArgs e)

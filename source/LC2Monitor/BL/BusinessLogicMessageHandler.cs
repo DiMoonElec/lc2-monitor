@@ -62,7 +62,11 @@ namespace LC2Monitor.BL
       _queue.CompleteAdding();
     }
 
-    private void PostMessage(BLMessage msg) { _queue.Add(msg); }
+    private void PostMessage(BLMessage msg) 
+    {
+      Log.Debug($"(BL) Added message {msg.ToString()}");
+      _queue.Add(msg); 
+    }
 
     private void MessageHandle(BLMessage message)
     {
@@ -86,6 +90,10 @@ namespace LC2Monitor.BL
         RTCSetUIMessageHandle(rtcSetUIMessage);
       else if (message is RTCSyncWithPCUIMessage)
         RTCSyncWithPCUIMessageHandle();
+      else if (message is GetRTCCalibrationUIMessage)
+        GetRTCCalibrationUIMessageHandle();
+      else if (message is SetRTCCalibrationUIMessage setRTCCalibrationUIMessage)
+        SetRTCCalibrationUIMessageHandle(setRTCCalibrationUIMessage.Value);
       else if (message is RuntimePrintDumpUIMessage)
         RuntimePrintDumpUIMessageHandle();
       else if (message is StateChangedDeviceMessage stateChangedDeviceMessage)
@@ -94,6 +102,35 @@ namespace LC2Monitor.BL
         ConnectionLostDeviceMessageHandle();
       else if (message is VariableViewerValueChangedUIMessage variableViewerValueChangedUIMessage)
         VariableViewerValueChangedUIMessageHandle(variableViewerValueChangedUIMessage);
+    }
+
+    private void SetRTCCalibrationUIMessageHandle(int value)
+    {
+      try
+      {
+        _Model.plcRequests.SetRTCCalibration((ushort)value);
+        OnLogUpdated?.Invoke($"RTC calibration is set to {(ushort)value}");
+      }
+      catch
+      {
+        OnLogUpdated?.Invoke("RTC calibration write error");
+        Log.Error("(BL) Failing SetRTCCalibrationUIMessageHandle");
+
+      }
+    }
+
+    private void GetRTCCalibrationUIMessageHandle()
+    {
+      try
+      {
+        var value = _Model.plcRequests.GetRTCCalibration();
+        RTCCalibrationReceived?.Invoke((int)value, new RTCACalibrationCalculator());
+      }
+      catch
+      {
+        OnLogUpdated?.Invoke("RTC calibration reading error");
+        Log.Error("(BL) Failing GetRTCCalibrationUIMessageHandle");
+      }
     }
 
     private void VariableViewerValueChangedUIMessageHandle(VariableViewerValueChangedUIMessage variableViewerValueChangedUIMessage)
@@ -117,9 +154,12 @@ namespace LC2Monitor.BL
 
     private void ConnectionLostDeviceMessageHandle()
     {
-      _Model.plcConnector.Close();
-      StateChanged(ModelState.Disconnected);
-      OnLogUpdated?.Invoke("Connection Lost");
+      if (_Model.State != ModelState.Disconnected)
+      {
+        _Model.plcConnector.Close();
+        StateChanged(ModelState.Disconnected);
+        OnLogUpdated?.Invoke("Connection Lost");
+      }
     }
 
     private void LoadProjectUIMessageHandle(string path)

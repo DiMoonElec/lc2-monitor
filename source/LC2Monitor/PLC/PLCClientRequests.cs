@@ -416,6 +416,30 @@ namespace LC2Monitor
       return BitConverter.ToUInt32(resp, 0);
     }
 
+    public void SetRTCCalibration(ushort value)
+    {
+      List<byte> req = new List<byte>();
+      req.Add(0x21); //CMD_SET_RTC_CALIBRATION
+      req.AddRange(BitConverter.GetBytes(value));
+
+      var resp = requestManager.SendRequest(req.ToArray());
+
+      if (resp == null || resp.Length < 1)
+        throw new InvalidOperationException("Invalud response from controller.");
+    }
+
+    internal ushort GetRTCCalibration()
+    {
+      List<byte> req = new List<byte>();
+      req.Add(0x22); // CMD_GET_RTC_CALIBRATION
+
+      var resp = requestManager.SendRequest(req.ToArray());
+
+      if (resp == null || resp.Length < 2)
+        throw new InvalidOperationException("Invalid response from controller.");
+
+      return BitConverter.ToUInt16(resp, 0);
+    }
 
     public SaveProgramResult SaveProgramToFlash()
     {

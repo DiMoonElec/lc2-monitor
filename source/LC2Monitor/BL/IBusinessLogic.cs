@@ -25,6 +25,7 @@ namespace LC2Monitor.BL
     event Action<VariablesDump> VariablesDumpUpdated;
     event Action<int, int, int> UpdateMetrics;
     event Action<DateTime> DisplayRTCTime;
+    event Action<int, IRTCCalibrationCalculator> RTCCalibrationReceived;
 
     void Init();
     void LoadProject(string filePath);
@@ -40,6 +41,8 @@ namespace LC2Monitor.BL
     void LCVMPrintDump();
     void RTCSyncWithPC();
     void RTCSync(DateTime dt);
+    void GetRTCCalibrationBegin();
+    void SetRTCCalibration(int value);
     void SaveProgramToFlash();
   }
 }

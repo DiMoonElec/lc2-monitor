@@ -20,6 +20,7 @@ namespace LC2Monitor.BL
     public event Action<VariablesDump> VariablesDumpUpdated;
     public event Action<int, int, int> UpdateMetrics;
     public event Action<DateTime> DisplayRTCTime;
+    public event Action<int, IRTCCalibrationCalculator> RTCCalibrationReceived;
 
     private readonly IWatchVariablesProvider WatchVariablesProvider;
 
@@ -133,6 +134,16 @@ namespace LC2Monitor.BL
     public void RTCSyncWithPC()
     {
       PostMessage(new RTCSyncWithPCUIMessage());
+    }
+
+    public void GetRTCCalibrationBegin()
+    {
+      PostMessage(new GetRTCCalibrationUIMessage());
+    }
+
+    public void SetRTCCalibration(int value)
+    {
+      PostMessage(new SetRTCCalibrationUIMessage(value));
     }
 
     public void LCVMPrintDump()

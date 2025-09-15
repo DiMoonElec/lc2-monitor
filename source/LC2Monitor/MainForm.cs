@@ -23,6 +23,8 @@ namespace LC2Monitor
     public event Action FormLoad;
     public event Action OnRTCSyncWithPCClicked;
     public event Action OnRTCSyncSetDateTimeClicked;
+    public event Action OnRTCCalibrationClicked;
+    public event Action<int> OnRTCSetCalibration;
     public event Action OnSaveProgramToFlashClicked;
 
     public MainForm()
@@ -31,6 +33,7 @@ namespace LC2Monitor
       disconnectToolStripMenuItem.Click += (s, e) => OnDisconnectClicked?.Invoke();
       rtcSyncWithPcStripMenuItem.Click += (s, e) => OnRTCSyncWithPCClicked?.Invoke();
       rtcSetDateTimeStripMenuItem.Click += (s, e) => OnRTCSyncSetDateTimeClicked?.Invoke();
+      rtcCalibrationStripMenuItem.Click += (s, e) => OnRTCCalibrationClicked?.Invoke();
       saveProgramToFlashToolStripMenuItem.Click += (s, e) => OnSaveProgramToFlashClicked?.Invoke();
 
 
@@ -115,6 +118,20 @@ namespace LC2Monitor
     public void UpdateLog(string message)
     {
       this.InvokeIfRequired(() => AddMessageToListBox(message));
+    }
+
+    public void RTCCalibrationShowDialog(int initValue, IRTCCalibrationCalculator calibrationCalculator)
+    {
+      this.InvokeIfRequired(() =>
+      {
+        using (var form = new RTCCorrectionInputForm(initValue, calibrationCalculator))
+        {
+          if (form.ShowDialog() == DialogResult.OK)
+          {
+            OnRTCSetCalibration?.Invoke(form.CalibrationValue);
+          }
+        }
+      });
     }
 
     public void UpdateControlStates(bool isConnected, bool isProjectLoaded,

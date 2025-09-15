@@ -19,8 +19,10 @@ namespace LC2Monitor.BL
     event Action<DataElementBase> VariableViewerValueChanged;
     event Action OnRTCSyncWithPCClicked;
     event Action OnRTCSyncSetDateTimeClicked;
+    event Action OnRTCCalibrationClicked;
+    event Action<int> OnRTCSetCalibration;
     event Action OnSaveProgramToFlashClicked;
-
+    
     void UpdateStatus(string connectionStatus, string plcStatus);
     void UpdatePortsList(IEnumerable<string> ports);
     void UpdateVariablesList(IEnumerable<DataElementBase> variables);
@@ -29,5 +31,6 @@ namespace LC2Monitor.BL
     void SetWatchVariables(VariablesDump variablesDump);
     void DisplayMetrics(int cycleValue, int duration, int durationMax);
     void DisplayRTCTime(DateTime dateTime);
+    void RTCCalibrationShowDialog(int initValue, IRTCCalibrationCalculator calibrationCalculator);
   }
 }

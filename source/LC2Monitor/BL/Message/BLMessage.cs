@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using DebugViews.DataClasses;
 
 namespace LC2Monitor.BL.Message
@@ -99,5 +100,19 @@ namespace LC2Monitor.BL.Message
     {
       Element = element;
     }
+  }
+
+  /// <summary>
+  /// Получить текущую калибровку RTC из устройства
+  /// </summary>
+  internal class GetRTCCalibrationUIMessage : BLMessage { }
+
+  /// <summary>
+  /// Установить калибровку RTC
+  /// </summary>
+  internal class SetRTCCalibrationUIMessage : BLMessage 
+  {
+    public int Value { get; }
+    public SetRTCCalibrationUIMessage(int value) { Value = value; }
   }
 }
