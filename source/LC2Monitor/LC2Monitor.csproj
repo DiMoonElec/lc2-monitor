@@ -104,6 +104,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MISC\FirmwareVersion.cs" />
     <Compile Include="MISC\RTCACalibrationCalculator.cs" />
     <Compile Include="BL\IDateTimeInputView.cs" />
     <Compile Include="MISC\IRTCCalibrationCalculator.cs" />

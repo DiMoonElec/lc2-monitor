@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DebugViews.DataClasses;
 using LC2Monitor.BL.Message;
+using LC2Monitor.MISC;
 
 namespace LC2Monitor.BL
 {
@@ -9,6 +10,8 @@ namespace LC2Monitor.BL
   {
     public static readonly DateTime RTCMinDateTime = new DateTime(2001, 1, 1, 0, 0, 0);
     public static readonly DateTime RTCMaxDateTime = new DateTime(2099, 12, 31, 23, 59, 59);
+
+    private static readonly FirmwareVersion MinFirmware_RTCCalibration = new FirmwareVersion(0, 3, 0);
 
     public event Action<string> OnLogUpdated;
     public event Action<string, string> OnStatusbarUpdated;
@@ -138,12 +141,18 @@ namespace LC2Monitor.BL
 
     public void GetRTCCalibrationBegin()
     {
-      PostMessage(new GetRTCCalibrationUIMessage());
+      if (CheckFirmwareVersion(MinFirmware_RTCCalibration))
+      {
+        PostMessage(new GetRTCCalibrationUIMessage());
+      }
     }
 
     public void SetRTCCalibration(int value)
     {
-      PostMessage(new SetRTCCalibrationUIMessage(value));
+      if (CheckFirmwareVersion(MinFirmware_RTCCalibration))
+      {
+        PostMessage(new SetRTCCalibrationUIMessage(value));
+      }
     }
 
     public void LCVMPrintDump()
@@ -205,5 +214,24 @@ namespace LC2Monitor.BL
     {
       //Вызывается при возникновении исключения в LiveWatchUpdate
     }
+
+    private bool CheckFirmwareVersion(FirmwareVersion expected)
+    {
+      if (_Model.firmwareVersion == null)
+      {
+        OnLogUpdated?.Invoke("Firmware version is unknown");
+        return false;
+      }
+
+      if (_Model.firmwareVersion < expected)
+      {
+        OnLogUpdated?.Invoke($"To perform the operation, the firmware version must be {expected} or higher");
+        return false;
+      }
+
+      return true;
+    }
+
+
   }
 }

@@ -62,10 +62,10 @@ namespace LC2Monitor.BL
       _queue.CompleteAdding();
     }
 
-    private void PostMessage(BLMessage msg) 
+    private void PostMessage(BLMessage msg)
     {
       Log.Debug($"(BL) Added message {msg.ToString()}");
-      _queue.Add(msg); 
+      _queue.Add(msg);
     }
 
     private void MessageHandle(BLMessage message)
@@ -475,6 +475,9 @@ namespace LC2Monitor.BL
         _Model.plcRequests.Ping();
         var info = _Model.plcRequests.GetInformation();
         printInformation(info);
+        _Model.firmwareVersion = new FirmwareVersion(info.MajorVersion,
+          info.MinorVersion,
+          info.PatchVersion);
 
         StateChangedDeviceMessageHandle(_Model.plcRequests.GetStatus());
       }

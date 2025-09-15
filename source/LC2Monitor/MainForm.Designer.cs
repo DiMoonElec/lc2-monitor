@@ -68,11 +68,12 @@
       this.rTCSyncToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.rtcSyncWithPcStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.rtcSetDateTimeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.rtcCalibrationStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.lCVMDumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.rtcCalibrationStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
       ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
       this.splitContainer1.Panel1.SuspendLayout();
       this.splitContainer1.Panel2.SuspendLayout();
@@ -95,7 +96,7 @@
       this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
       this.splitContainer1.Location = new System.Drawing.Point(11, 26);
-      this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
       this.splitContainer1.Name = "splitContainer1";
       // 
       // splitContainer1.Panel1
@@ -106,7 +107,7 @@
       // 
       this.splitContainer1.Panel2.Controls.Add(this.variableViewer);
       this.splitContainer1.Size = new System.Drawing.Size(772, 327);
-      this.splitContainer1.SplitterDistance = 426;
+      this.splitContainer1.SplitterDistance = 427;
       this.splitContainer1.SplitterWidth = 3;
       this.splitContainer1.TabIndex = 2;
       // 
@@ -116,7 +117,7 @@
       this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
       this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
       this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-      this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.splitContainer2.Margin = new System.Windows.Forms.Padding(2);
       this.splitContainer2.Name = "splitContainer2";
       this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
       // 
@@ -127,7 +128,7 @@
       // splitContainer2.Panel2
       // 
       this.splitContainer2.Panel2.Controls.Add(this.logsListBox);
-      this.splitContainer2.Size = new System.Drawing.Size(426, 327);
+      this.splitContainer2.Size = new System.Drawing.Size(427, 327);
       this.splitContainer2.SplitterDistance = 113;
       this.splitContainer2.SplitterWidth = 3;
       this.splitContainer2.TabIndex = 0;
@@ -144,7 +145,7 @@
       this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
       this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
       this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 99F));
-      this.tableLayoutPanel3.Size = new System.Drawing.Size(424, 111);
+      this.tableLayoutPanel3.Size = new System.Drawing.Size(425, 111);
       this.tableLayoutPanel3.TabIndex = 5;
       // 
       // tableLayoutPanel4
@@ -164,7 +165,7 @@
       this.tableLayoutPanel4.Name = "tableLayoutPanel4";
       this.tableLayoutPanel4.RowCount = 1;
       this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 51F));
-      this.tableLayoutPanel4.Size = new System.Drawing.Size(418, 51);
+      this.tableLayoutPanel4.Size = new System.Drawing.Size(419, 51);
       this.tableLayoutPanel4.TabIndex = 5;
       // 
       // btnStep
@@ -203,7 +204,7 @@
       this.btnSendBinary.Dock = System.Windows.Forms.DockStyle.Fill;
       this.btnSendBinary.Location = new System.Drawing.Point(335, 3);
       this.btnSendBinary.Name = "btnSendBinary";
-      this.btnSendBinary.Size = new System.Drawing.Size(80, 45);
+      this.btnSendBinary.Size = new System.Drawing.Size(81, 45);
       this.btnSendBinary.TabIndex = 3;
       this.btnSendBinary.Text = "Download";
       this.btnSendBinary.UseVisualStyleBackColor = true;
@@ -213,18 +214,18 @@
       this.logsListBox.Dock = System.Windows.Forms.DockStyle.Fill;
       this.logsListBox.FormattingEnabled = true;
       this.logsListBox.Location = new System.Drawing.Point(0, 0);
-      this.logsListBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.logsListBox.Margin = new System.Windows.Forms.Padding(2);
       this.logsListBox.Name = "logsListBox";
-      this.logsListBox.Size = new System.Drawing.Size(424, 209);
+      this.logsListBox.Size = new System.Drawing.Size(425, 209);
       this.logsListBox.TabIndex = 0;
       // 
       // variableViewer
       // 
       this.variableViewer.Dock = System.Windows.Forms.DockStyle.Fill;
       this.variableViewer.Location = new System.Drawing.Point(0, 0);
-      this.variableViewer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.variableViewer.Margin = new System.Windows.Forms.Padding(2);
       this.variableViewer.Name = "variableViewer";
-      this.variableViewer.Size = new System.Drawing.Size(341, 325);
+      this.variableViewer.Size = new System.Drawing.Size(340, 325);
       this.variableViewer.TabIndex = 1;
       this.variableViewer.VisibleLiveColumn = true;
       // 
@@ -438,6 +439,7 @@
       this.rTCSyncToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rtcSyncWithPcStripMenuItem,
             this.rtcSetDateTimeStripMenuItem,
+            this.toolStripSeparator4,
             this.rtcCalibrationStripMenuItem});
       this.rTCSyncToolStripMenuItem.Name = "rTCSyncToolStripMenuItem";
       this.rTCSyncToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -454,6 +456,12 @@
       this.rtcSetDateTimeStripMenuItem.Name = "rtcSetDateTimeStripMenuItem";
       this.rtcSetDateTimeStripMenuItem.Size = new System.Drawing.Size(180, 22);
       this.rtcSetDateTimeStripMenuItem.Text = "Set Date and Time…";
+      // 
+      // rtcCalibrationStripMenuItem
+      // 
+      this.rtcCalibrationStripMenuItem.Name = "rtcCalibrationStripMenuItem";
+      this.rtcCalibrationStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      this.rtcCalibrationStripMenuItem.Text = "RTC Calibration";
       // 
       // toolStripSeparator2
       // 
@@ -481,11 +489,10 @@
       this.aboutToolStripMenuItem.Text = "About";
       this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
       // 
-      // rtcCalibrationStripMenuItem
+      // toolStripSeparator4
       // 
-      this.rtcCalibrationStripMenuItem.Name = "rtcCalibrationStripMenuItem";
-      this.rtcCalibrationStripMenuItem.Size = new System.Drawing.Size(180, 22);
-      this.rtcCalibrationStripMenuItem.Text = "RTC Calibration";
+      this.toolStripSeparator4.Name = "toolStripSeparator4";
+      this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
       // 
       // MainForm
       // 
@@ -565,6 +572,7 @@
     private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem rtcCalibrationStripMenuItem;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
   }
 }
 
